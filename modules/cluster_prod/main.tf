@@ -22,7 +22,7 @@ provider = rancher2.admin
     disk_size                 = 32000
     datacenter                = var.vsphere_datacenter
     datastore                 = var.vm_datastore
-    pool                      = var.vsphere_pool"
+    pool                      = var.vsphere_pool
     folder                    = ""
   }
 }
