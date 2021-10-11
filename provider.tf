@@ -18,17 +18,11 @@ provider "helm" {
   }
 }
 
+#This is for when I want to install additional charts in utility cluster
 provider "helm" {
   alias = "utility"
   kubernetes {
     config_path = "./utility_kube_config_cluster.yml"
-  }
-}
-
-provider "helm" {
-  alias = "prod"
-  kubernetes {
-    config_path = "./prod_kube_config_cluster.yml"
   }
 }
 

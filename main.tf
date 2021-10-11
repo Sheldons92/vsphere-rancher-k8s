@@ -126,15 +126,6 @@ resource "null_resource" "wait_for_rancher" {
               EOF
   }
 
-  depends_on = [module.rancher]
+  depends_on = [
+    module.rancher ]
 }
-
-//provider "helm" {
-//  kubernetes {
-//    config_path = "./kube_config_cluster.yml"
-//  }
-//}
-//
-//provider "kubernetes" {
-//  config_path = "./kube_config_cluster.yml"
-//}
