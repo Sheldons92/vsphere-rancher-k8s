@@ -127,9 +127,9 @@ resource "rancher2_node_pool" "nodepool_master" {
   provider = rancher2.admin
   cluster_id = rancher2_cluster.prod_cluster.id
   name = "masters"
-  hostname_prefix = "dsheldon-prod-master-"
+  hostname_prefix = "dsheldon-prod-master-" #TODO Variablise
   node_template_id = rancher2_node_template.prod_ms_template.id
-  quantity = "1"
+  quantity = "1" #TODO Variablise
   control_plane = true
   etcd = true
   worker = false
@@ -142,9 +142,9 @@ resource "rancher2_node_pool" "nodepool_worker" {
   provider = rancher2.admin
   cluster_id = rancher2_cluster.prod_cluster.id
   name = "workers"
-  hostname_prefix = "dsheldon-prod-worker-"
+  hostname_prefix = "dsheldon-prod-worker-" #TODO Variablise
   node_template_id = rancher2_node_template.prod_worker_template.id
-  quantity = "1"
+  quantity = "1" #TODO Variablise
   control_plane = false
   etcd = false
   worker = true
