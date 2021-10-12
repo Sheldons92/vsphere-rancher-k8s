@@ -80,19 +80,19 @@ resource "rancher2_cloud_credential" "fremont" {
 output "cloud_credential" {
   value = rancher2_cloud_credential.fremont.id
 }
-
-resource "rancher2_token" "api_key" {
-  provider = rancher2.admin
-  description = "api key for null resource"
-  ttl = 1200
-}
-
-output "access_key" {
-  value = rancher2_token.api_key.access_key
-  sensitive = true
-}
-
-output "secret_access_key" {
-  value = rancher2_token.api_key.secret_key
-  sensitive = true
-}
+//
+//resource "rancher2_token" "api_key" {
+//  provider = rancher2.admin
+//  description = "api key for null resource"
+//  ttl = 1200
+//}
+//
+//output "access_key" {
+//  value = rancher2_token.api_key.access_key
+//  sensitive = true
+//}
+//
+//output "secret_access_key" {
+//  value = rancher2_token.api_key.secret_key
+//  sensitive = true
+//}

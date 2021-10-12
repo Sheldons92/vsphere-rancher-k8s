@@ -133,6 +133,21 @@ resource "rancher2_app_v2" "longhorn" {
   chart_version = "1.0.201"
 }
 
+# Create a new Rancher2 Cluster Logging
+resource "rancher2_cluster_logging" "ecklogging" {
+  provider = rancher2.admin
+  name = "ecklogging"
+  cluster_id = rancher2_cluster.utility_cluster.id
+  kind = "elasticsearch"
+  elasticsearch_config {
+    endpoint = "http://elasticsearch-es-default:9200"
+    auth_username = "elastic"
+    auth_password = var.elastic_password #this wont work yet
+    index_prefix = "utility"
+    ssl_verify = false
+  }
+}
+
 # Rancher masterpool
 resource "rancher2_node_pool" "nodepool_master" {
   provider = rancher2.admin
@@ -155,7 +170,7 @@ resource "rancher2_node_pool" "nodepool_worker" {
   name = "workers"
   hostname_prefix = "dsheldon-utility-worker-" #TODO Variablise
   node_template_id = rancher2_node_template.utility_worker_template.id
-  quantity = "1" #TODO Variablise
+  quantity = "3" #TODO Variablise
   control_plane = false
   etcd = false
   worker = true

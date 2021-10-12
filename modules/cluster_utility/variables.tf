@@ -67,3 +67,8 @@ variable vsphere_pool {
   type        = string
   description = "name of vsphere pool for kubernetes clusters"
 }
+
+variable elastic_password {
+  type        = string
+  description = "name of vsphere pool for kubernetes clusters"
+}

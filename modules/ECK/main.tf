@@ -42,3 +42,10 @@ resource "null_resource" "elasticsearch" {
     command = "kubectl apply -f kubectmodules/ECK/yaml/elasticsearch.yaml --kubeconfig=utility_kube_config_cluster.yml"
   }
 }
+
+resource "null_resource" "kibana" {
+  depends_on = [null_resource.elasticsearch]
+  provisioner "local-exec" {
+    command = "kubectl apply -f modules/ECK/yaml/kibana.yaml --kubeconfig=utility_kube_config_cluster.yml"
+  }
+}
