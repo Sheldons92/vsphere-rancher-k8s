@@ -8,6 +8,8 @@ This repo creates the following:
 * 3x RKE Nodes leveraging Embedded HA, forming a K8s Cluster
 * Installation of `Cert-Manager` and `Rancher` 
 * 2x Downstream RKE Clusters with Monitoring Enabled (Prod & Utility)
+* Installs Longhorn in to Utility cluster for PVs
+* Installs ECK operator in to the Utility cluster
 
 # Prerequisites
 

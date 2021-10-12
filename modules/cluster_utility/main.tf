@@ -37,7 +37,7 @@ resource "rancher2_node_template" "utility_worker_template" {
     clone_from                = var.template_location
     cpu_count                 = 4
     memory_size               = 8192
-    disk_size                 = 32000
+    disk_size                 = 80000
     datacenter                = var.vsphere_datacenter
     datastore                 = var.vm_datastore
     pool                      = var.vsphere_pool
@@ -121,6 +121,17 @@ resource "rancher2_cluster_template" "utility_template" {
       depends_on = [
         rancher2_cluster_template.utility_template]
     }
+
+#install Longhorn
+resource "rancher2_app_v2" "longhorn" {
+  provider = rancher2.admin
+  cluster_id = rancher2_cluster.utility_cluster.id
+  name = "rancher-longhorn"
+  namespace = "longhorn-system"
+  repo_name = "rancher-charts"
+  chart_name = "longhorn"
+  chart_version = "1.0.201"
+}
 
 # Rancher masterpool
 resource "rancher2_node_pool" "nodepool_master" {

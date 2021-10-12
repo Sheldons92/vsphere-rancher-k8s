@@ -119,6 +119,17 @@ module "prod" {
   template_location = var.template_location
 }
 
+module "eck" {
+  source = "./modules/eck"
+  providers = {
+    helm.utility = helm.utility
+  }
+    rancher_hostname = var.rancher_hostname
+    access_key = module.rancher.access_key
+    secret_access_key = module.rancher.secret_access_key
+    depends_on = [ module.utility ]
+}
+
 resource "null_resource" "wait_for_rancher" {
   provisioner "local-exec" {
     command = <<EOF
@@ -126,6 +137,5 @@ resource "null_resource" "wait_for_rancher" {
               EOF
   }
 
-  depends_on = [
-    module.rancher ]
+  depends_on = [module.rancher]
 }
