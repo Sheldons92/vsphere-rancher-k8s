@@ -79,6 +79,7 @@ module "utility" {
   source              = "./modules/cluster_utility"
   providers = {
     rancher2.admin = rancher2.admin
+    helm.utility = helm.utility
   }
   rancher_hostname = var.rancher_hostname
   token_key = module.rancher.token_key
@@ -94,30 +95,45 @@ module "utility" {
   vm_datastore = var.vm_datastore
   vsphere_pool = var.resource_pool
   template_location = var.template_location
+  vm_template = var.vm_template
+  resource_pool = var.resource_pool
+  vm_dns = var.vm_dns
+  lb_dns = var.lb_dns
+  lb_cpucount = var.lb_cpucount
+  lb_memory   = var.lb_memory
+  vm_ssh_key = var.vm_ssh_key
+  vm_ssh_user = var.vm_ssh_user
+  utility_lb_prefix = var.utility_lb_prefix
+  utility_lb_address = var.utility_lb_address
+  lb_netmask = var.lb_netmask
+  vm_gateway = var.vm_gateway
+  certmanager_version = var.certmanager_version
 }
 
-module "prod" {
-  source = "./modules/cluster_prod"
-  providers = {
-    rancher2.admin = rancher2.admin
-  }
-  rancher_hostname = var.rancher_hostname
-  token_key = module.rancher.token_key
-  cloud_credential = module.rancher.cloud_credential
-  vsphere_user = var.vsphere_user
-  vsphere_password = var.vsphere_password
-  vsphere_datacenter = var.vsphere_datacenter
-  vsphere_cluster = var.vsphere_cluster
-  vsphere_network = var.vsphere_network
-  vm_count = "1"
-  #TODO Figure out why I need this?
-  vm_prefix = "null"
-  #TODO Figure out why I need this?
-  vsphere_server = var.vsphere_server
-  vm_datastore = var.vm_datastore
-  vsphere_pool = var.resource_pool
-  template_location = var.template_location
-}
+
+
+//module "prod" {
+//  source = "./modules/cluster_prod"
+//  providers = {
+//    rancher2.admin = rancher2.admin
+//  }
+//  rancher_hostname = var.rancher_hostname
+//  token_key = module.rancher.token_key
+//  cloud_credential = module.rancher.cloud_credential
+//  vsphere_user = var.vsphere_user
+//  vsphere_password = var.vsphere_password
+//  vsphere_datacenter = var.vsphere_datacenter
+//  vsphere_cluster = var.vsphere_cluster
+//  vsphere_network = var.vsphere_network
+//  vm_count = "1"
+//  #TODO Figure out why I need this?
+//  vm_prefix = "null"
+//  #TODO Figure out why I need this?
+//  vsphere_server = var.vsphere_server
+//  vm_datastore = var.vm_datastore
+//  vsphere_pool = var.resource_pool
+//  template_location = var.template_location
+//}
 
 module "eck" {
   source = "./modules/eck"
@@ -125,8 +141,8 @@ module "eck" {
     helm.utility = helm.utility
   }
     rancher_hostname = var.rancher_hostname
-    access_key = module.rancher.access_key
-    secret_access_key = module.rancher.secret_access_key
+//    access_key = module.rancher.access_key
+//    secret_access_key = module.rancher.secret_access_key
     depends_on = [ module.utility ]
 }
 
@@ -138,4 +154,8 @@ resource "null_resource" "wait_for_rancher" {
   }
 
   depends_on = [module.rancher]
+}
+
+output "utility_worker_ips" {
+  value = module.utility.utility_worker_ips
 }

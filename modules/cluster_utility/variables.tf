@@ -68,7 +68,67 @@ variable vsphere_pool {
   description = "name of vsphere pool for kubernetes clusters"
 }
 
-variable elastic_password {
+variable vm_template {
   type        = string
-  description = "name of vsphere pool for kubernetes clusters"
+  description = "Name of VM template to use"
+}
+
+variable resource_pool {
+  type        = string
+  description = "resource pool for VMs"
+}
+
+variable lb_dns {
+  type        = string
+  description = "DNS Server for the Loadbalancer VM"
+}
+
+variable vm_dns {
+  type        = string
+  description = "DNS Server for the Loadbalancer VM"
+}
+
+variable lb_cpucount {
+  type        = number
+  description = "Number of CPU's to assign to the Loadbalancer VM"
+}
+
+variable lb_memory {
+  type        = number
+  description = "Amount of RAM in MB to assign to the Loadbalancer VM"
+}
+
+variable vm_ssh_key {
+  type        = string
+  description = "SSH key to add to the cloud-init for user access"
+}
+
+variable vm_ssh_user {
+  type        = string
+  description = "Username for ssh access"
+}
+
+variable lb_netmask {
+  type        = string
+  description = "Subnet Mask length for VM's"
+}
+
+variable utility_lb_address {
+  type        = string
+  description = "IP address for the NGINX loadbalancer"
+}
+
+variable utility_lb_prefix {
+  type        = string
+  description = "Name prefix for the Loadbalancer"
+}
+
+variable vm_gateway {
+  type        = string
+  description = "Gateway address for VM"
+}
+
+variable certmanager_version {
+  type        = string
+  description = "Version of Certmanager to install"
 }

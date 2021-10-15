@@ -162,3 +162,13 @@ variable template_location {
   type        = string
   description = "Location of template for downstream RKE Clusters in format /DC/Folder/Name"
 }
+
+variable utility_lb_prefix {
+  type        = string
+  description = "Location of template for downstream RKE Clusters in format /DC/Folder/Name"
+}
+
+variable utility_lb_address {
+  type        = string
+  description = "Location of template for downstream RKE Clusters in format /DC/Folder/Name"
+}

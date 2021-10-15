@@ -17,25 +17,25 @@ write_files:
         }
 
         stream {
-            upstream utility_servers_http {
+            upstream rancher_servers_http {
                 least_conn;
             %{ for s in servers ~}
-                server ${s}:80 max_fails=3 fail_timeout=5s;
+                server ${s}:39050 max_fails=3 fail_timeout=5s;
             %{ endfor ~}
             }
             server {
                 listen 80;
-                proxy_pass utility_servers_http;
+                proxy_pass rancher_servers_http;
             }
 
-            upstream utility_servers_https {
+            upstream rancher_servers_https {
                 least_conn;
             %{ for s in servers ~}
-                server ${s}:443 max_fails=3 fail_timeout=5s;
+                server ${s}:30050 max_fails=3 fail_timeout=5s;
             %{ endfor ~}
             }
             server {
                 listen     443;
-                proxy_pass utility_servers_https;
+                proxy_pass rancher_servers_https;
             }
         }

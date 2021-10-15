@@ -38,13 +38,14 @@ resource "helm_release" "elastic-operator" {
 }
 
 resource "null_resource" "elasticsearch" {
+  depends_on = [helm_release.elastic-operator]
   provisioner "local-exec" {
-    command = "kubectl apply -f kubectmodules/ECK/yaml/elasticsearch.yaml --kubeconfig=utility_kube_config_cluster.yml"
+    command = "kubectl apply -f modules/ECK/yaml/elasticsearch.yaml --kubeconfig=utility_kube_config_cluster.yml"
   }
 }
 
 resource "null_resource" "kibana" {
-  depends_on = [null_resource.elasticsearch]
+  depends_on = [helm_release.elastic-operator]
   provisioner "local-exec" {
     command = "kubectl apply -f modules/ECK/yaml/kibana.yaml --kubeconfig=utility_kube_config_cluster.yml"
   }
