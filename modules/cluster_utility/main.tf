@@ -40,7 +40,7 @@ resource "rancher2_node_template" "utility_worker_template" {
     clone_from                = var.template_location
     cpu_count                 = 4
     memory_size               = 8192
-    disk_size                 = 80000
+    disk_size                 = 32000
     datacenter                = var.vsphere_datacenter
     datastore                 = var.vm_datastore
     pool                      = var.vsphere_pool
@@ -63,7 +63,7 @@ resource "rancher2_cluster_template" "utility_template" {
         kubernetes_version = "v1.20.11-rancher1-1"
         ignore_docker_version = false
         network {
-          plugin = "flannel"
+          plugin = "canal"
         }
         cloud_provider {
           vsphere_cloud_provider {
@@ -156,35 +156,24 @@ resource "rancher2_node_pool" "nodepool_worker" {
   depends_on = [rancher2_cluster_template.utility_template]
 }
 
-
-//# Delay hack part 1
-//resource "null_resource" "before" {
-//  depends_on = [rancher2_cluster.utility_cluster,rancher2_node_pool.nodepool_master,rancher2_node_pool.nodepool_worker]
-//}
-
-//# Delay hack part 2
-//resource "null_resource" "delay" {
-//  depends_on = [rancher2_cluster.utility_cluster]
-//  provisioner "local-exec" {
-//    command = "sleep 780"
-//  }
-//}
-
-resource "rancher2_cluster_sync" "utility_master" {
+#This has a bug, and causes Longhorn to Fail, but needed to get IP Addresses of Nodes.
+resource "rancher2_cluster_sync" "utility_cluster" {
   provider = rancher2.admin
   cluster_id = rancher2_cluster.utility_cluster.id
   node_pool_ids = [
-    rancher2_node_pool.nodepool_master.id
-  ]
-}
-
-resource "rancher2_cluster_sync" "utility_worker" {
-  provider = rancher2.admin
-  cluster_id = rancher2_cluster.utility_cluster.id
-  node_pool_ids = [
+    rancher2_node_pool.nodepool_master.id,
     rancher2_node_pool.nodepool_worker.id
   ]
 }
+
+#Adding extra 2 minute sleep to counter above bug.
+resource "null_resource" "delay" {
+  depends_on = [rancher2_cluster_sync.utility_cluster]
+  provisioner "local-exec" {
+    command = "sleep 320"
+  }
+}
+
 
 resource "local_file" "kube_cluster_yaml" {
   filename = "${path.root}/utility_kube_config_cluster.yml"
@@ -193,45 +182,19 @@ resource "local_file" "kube_cluster_yaml" {
 
 }
 
-resource "helm_release" "cert-manager" {
-  provider = helm.utility
-  name       = "cert-manager"
-  repository = "https://charts.jetstack.io"
-  chart      = "cert-manager"
-  version    = var.certmanager_version
-  namespace  = "cert-manager"
-
-  depends_on = [null_resource.cert-manager-prereqs]
-}
-
-resource "null_resource" "cert-manager-prereqs" {
-  depends_on = [rancher2_cluster_sync.utility_worker]
-
-  provisioner "local-exec" {
-    command = "kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v0.15.0/cert-manager.crds.yaml --kubeconfig=utility_kube_config_cluster.yml"
-  }
-
-  provisioner "local-exec" {
-    command = "kubectl create ns cattle-system --kubeconfig=utility_kube_config_cluster.yml"
-  }
-
-  provisioner "local-exec" {
-    command = "kubectl create ns cert-manager --kubeconfig=utility_kube_config_cluster.yml"
-  }
-}
 
 resource "null_resource" "nginx_service" {
-  depends_on = [rancher2_cluster_sync.utility_worker]
+  depends_on = [null_resource.delay]
 
   provisioner "local-exec" {
-    command = "kubectl apply -f /modules/cluster_utility/templates/nginx_svc.yml --kubeconfig=utility_kube_config_cluster.yml"
+    command = "kubectl apply -f modules/cluster_utility/templates/nginx_svc.yml --kubeconfig=utility_kube_config_cluster.yml"
   }
 }
 
 
 #install Longhorn
 resource "rancher2_app_v2" "longhorn" {
-  depends_on = [rancher2_cluster_sync.utility_master, rancher2_cluster_sync.utility_worker]
+  depends_on = [null_resource.delay]
   provider = rancher2.admin
   cluster_id = rancher2_cluster.utility_cluster.id
   name = "longhorn"
@@ -243,22 +206,22 @@ resource "rancher2_app_v2" "longhorn" {
 
 # Create a new Rancher2 Cluster Logging
 resource "rancher2_cluster_logging" "ecklogging" {
-  depends_on = [rancher2_cluster_sync.utility_master, rancher2_cluster_sync.utility_worker]
+  depends_on = [null_resource.delay]
   provider = rancher2.admin
   name = "ecklogging"
   cluster_id = rancher2_cluster.utility_cluster.id
   kind = "elasticsearch"
   elasticsearch_config {
-    endpoint = "http://ip:9200"
+    endpoint = "http://elasticsearch.172.16.128.244.nip.io"
     auth_username = "elastic"
-    auth_password = "test" #this wont work yet
+    auth_password = var.elastic_password #this wont work yet
     index_prefix = "utility"
     ssl_verify = false
   }
 }
 
 output "utility_worker_ips" {
-  value = "${rancher2_cluster_sync.utility_worker.nodes[*].ip_address}"
+  value = "${rancher2_cluster_sync.utility_cluster.nodes[*].ip_address}"
 }
 
 #Creating LB for Cluster
@@ -335,7 +298,7 @@ resource "vsphere_virtual_machine" "utility-lb" {
 
 
     "guestinfo.userdata" = base64encode(templatefile("${path.module}/templates/userdata_lb.yml.tpl", {
-      servers = rancher2_cluster_sync.utility_worker.nodes[*].ip_address,
+      servers = rancher2_cluster_sync.utility_cluster.nodes[*].ip_address,
       vm_ssh_user = var.vm_ssh_user,
       vm_ssh_key = var.vm_ssh_key
     }))

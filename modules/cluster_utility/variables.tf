@@ -132,3 +132,8 @@ variable certmanager_version {
   type        = string
   description = "Version of Certmanager to install"
 }
+
+variable elastic_password {
+  type        = string
+  description = "Location of template for downstream RKE Clusters in format /DC/Folder/Name"
+}

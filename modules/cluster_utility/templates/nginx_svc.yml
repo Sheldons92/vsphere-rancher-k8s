@@ -5,22 +5,15 @@ metadata:
   name: ingress-nginx-controller
   namespace: ingress-nginx
 spec:
-  type: NodePort
-  ipFamilyPolicy: SingleStack
-  ipFamilies:
-    - IPv4
+  type: ClusterIP
   ports:
     - name: http
-      nodePort: 30950
       port: 80
       protocol: TCP
       targetPort: http
-      appProtocol: http
     - name: https
-      nodePort: 30050
       port: 443
       protocol: TCP
       targetPort: https
-      appProtocol: https
   selector:
     app: ingress-nginx

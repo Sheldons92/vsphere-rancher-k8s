@@ -9,7 +9,9 @@ This repo creates the following:
 * Installation of `Cert-Manager` and `Rancher` 
 * 2x Downstream RKE Clusters with Monitoring Enabled (Prod & Utility)
 * Installs Longhorn in to Utility cluster for PVs
+* Configures NGINX External LB for Utility Cluster Ingress
 * Installs ECK operator in to the Utility cluster
+* Installs ElasticSearch & Kibana
 
 # Prerequisites
 
@@ -40,3 +42,10 @@ Outputs:
 rancher_url = https://rancher.nip.io
 ```
 This repository is based off David Holders Rancher vSphere Repo (https://github.com/David-VTUK/Rancher-RKE-vSphere)
+
+# TODO
+Remove hardcoded values where necessary
+Extract ES Creds for Rancher Logging
+SSL/TLS On Ingress & Elastic
+Update Architecture Diagram
+Upgrade Monitoring to 0.2.X

@@ -108,6 +108,7 @@ module "utility" {
   lb_netmask = var.lb_netmask
   vm_gateway = var.vm_gateway
   certmanager_version = var.certmanager_version
+  elastic_password = var.elastic_password
 }
 
 
@@ -137,12 +138,11 @@ module "utility" {
 
 module "eck" {
   source = "./modules/eck"
+  elastic_password = var.elastic_password
   providers = {
     helm.utility = helm.utility
   }
     rancher_hostname = var.rancher_hostname
-//    access_key = module.rancher.access_key
-//    secret_access_key = module.rancher.secret_access_key
     depends_on = [ module.utility ]
 }
 

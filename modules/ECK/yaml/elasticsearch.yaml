@@ -15,4 +15,8 @@ spec:
         labels:
           my-custom: label
       spec:
-        type: NodePort
+        type: ClusterIP
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true

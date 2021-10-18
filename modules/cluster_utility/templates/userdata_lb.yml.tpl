@@ -20,7 +20,7 @@ write_files:
             upstream rancher_servers_http {
                 least_conn;
             %{ for s in servers ~}
-                server ${s}:39050 max_fails=3 fail_timeout=5s;
+                server ${s}:80 max_fails=3 fail_timeout=5s;
             %{ endfor ~}
             }
             server {
@@ -31,7 +31,7 @@ write_files:
             upstream rancher_servers_https {
                 least_conn;
             %{ for s in servers ~}
-                server ${s}:30050 max_fails=3 fail_timeout=5s;
+                server ${s}:443 max_fails=3 fail_timeout=5s;
             %{ endfor ~}
             }
             server {

@@ -6,18 +6,7 @@ terraform {
   }
 }
 
-#this doesn't work...
-//resource "null_resource" "wait_for_cluster" {
-//  provisioner "local-exec" {
-//    command =
-//    <<EOF
-//        while true; do curl -kv -u -u ${var.access_key}:${var.secret_access_key} https://${var.rancher_hostname}/v3/clusters\?name\=utility-cluster | jq -r '.data[0] | .state'; if [[ $1 != "active" ]]; then echo "Utility Cluster is not Active yet"; sleep 5; continue; fi; break; done; echo "Utility Cluster is ready";
-//    EOF
-//  }
-//}
-
 resource "helm_release" "elastic-operator" {
-//  depends_on = [null_resource.wait_for_cluster]
   provider = helm.utility
   name       = "elastic-operator"
   repository = "https://helm.elastic.co"
@@ -37,10 +26,24 @@ resource "helm_release" "elastic-operator" {
   }
 }
 
+resource "null_resource" "elastic_secret" {
+depends_on = [helm_release.elastic-operator]
+provisioner "local-exec" {
+command = "kubectl create secret generic elasticsearch-es-elastic-user --from-literal=elastic=${var.elastic_password} --kubeconfig=utility_kube_config_cluster.yml"
+}
+
+}
 resource "null_resource" "elasticsearch" {
   depends_on = [helm_release.elastic-operator]
   provisioner "local-exec" {
     command = "kubectl apply -f modules/ECK/yaml/elasticsearch.yaml --kubeconfig=utility_kube_config_cluster.yml"
+  }
+}
+
+resource "null_resource" "elasticsearch_ingress" {
+  depends_on = [helm_release.elastic-operator]
+  provisioner "local-exec" {
+    command = "kubectl apply -f modules/ECK/yaml/ingress.yml --kubeconfig=utility_kube_config_cluster.yml"
   }
 }
 
