@@ -44,8 +44,8 @@ rancher_url = https://rancher.nip.io
 This repository is based off David Holders Rancher vSphere Repo (https://github.com/David-VTUK/Rancher-RKE-vSphere)
 
 # TODO
-Remove hardcoded values where necessary
-Extract ES Creds for Rancher Logging
-SSL/TLS On Ingress & Elastic
-Update Architecture Diagram
-Upgrade Monitoring to 0.2.X
+* Remove hardcoded values where necessary
+* Extract ES Creds for Rancher Logging
+* SSL/TLS On Ingress & Elastic
+* Update Architecture Diagram
+* Upgrade Monitoring to 0.2.X
