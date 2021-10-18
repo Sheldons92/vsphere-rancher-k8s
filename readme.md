@@ -1,6 +1,5 @@
 # Rancher and RKE on vSphere With 2 Downstream Clusters Terraform Script
 
-![Architecture Diagram](./Images/Architecture.png)
 
 This repo creates the following:
 
@@ -49,3 +48,4 @@ This repository is based off David Holders Rancher vSphere Repo (https://github.
 * SSL/TLS On Ingress & Elastic
 * Update Architecture Diagram
 * Upgrade Monitoring to 0.2.X
+* New architecture diagram
