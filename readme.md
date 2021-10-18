@@ -15,7 +15,7 @@ This repo creates the following:
 
 # Prerequisites
 
-* Prior to running this script, a DNS record needs to be created to point at the Loadbalancer IP address, defined in the variable `lb_address`.
+* Prior to running this script, two DNS records need to be created to point at the 2x Loadbalancer IP addresses, defined in the variables `lb_address` & `utility_lb_Address`.
 
 * The VM template used must have the `Cloud-Init Datasource for VMware GuestInfo` project installed, which facilitates pulling meta, user, and vendor data from VMware vSphere's GuestInfo interface. This can be achieved with:
 
