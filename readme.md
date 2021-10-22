@@ -3,12 +3,11 @@
 
 This repo creates the following:
 
-* 1x NGINX Loadbalancer
+* 2x NGINX Loadbalancer (1 For Rancher, 1 for Utility Cluster)
 * 3x RKE Nodes leveraging Embedded HA, forming a K8s Cluster
 * Installation of `Cert-Manager` and `Rancher` 
 * 2x Downstream RKE Clusters with Monitoring Enabled (Prod & Utility)
 * Installs Longhorn in to Utility cluster for PVs
-* Configures NGINX External LB for Utility Cluster Ingress
 * Installs ECK operator in to the Utility cluster
 * Installs ElasticSearch & Kibana
 
