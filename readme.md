@@ -44,8 +44,9 @@ This repository is based off David Holders Rancher vSphere Repo (https://github.
 
 # TODO
 * Remove hardcoded values where necessary
-* Extract ES Creds for Rancher Logging
 * SSL/TLS On Ingress & Elastic
 * Update Architecture Diagram
-* Upgrade Monitoring to 0.2.X
+* Update to Rancher_App_v2 for logging (Or use beats)
 * New architecture diagram
+* Add dedicated longhorn disk to nodes.
+* Make versions for Public Cloud (AWS/Azure/GCP)

@@ -97,30 +97,7 @@ resource "rancher2_cluster_template" "utility_template" {
       description = "Terraform"
       cluster_template_id = rancher2_cluster_template.utility_template.id
       cluster_template_revision_id = rancher2_cluster_template.utility_template.default_revision_id
-      enable_cluster_monitoring = true
-      cluster_monitoring_input {
-        answers = {
-          "exporter-kubelets.https" = true
-          "exporter-node.enabled" = true
-          "exporter-node.ports.metrics.port" = 9796
-          "exporter-node.resources.limits.cpu" = "200m"
-          "exporter-node.resources.limits.memory" = "200Mi"
-          "grafana.persistence.enabled" = false
-          "grafana.persistence.size" = "10Gi"
-          "grafana.persistence.storageClass" = "default"
-          "operator.resources.limits.memory" = "500Mi"
-          "prometheus.persistence.enabled" = "false"
-          "prometheus.persistence.size" = "10Gi"
-          "prometheus.persistence.storageClass" = "default"
-          "prometheus.persistent.useReleaseName" = "true"
-          "prometheus.resources.core.limits.cpu" = "1000m",
-          "prometheus.resources.core.limits.memory" = "1500Mi"
-          "prometheus.resources.core.requests.cpu" = "750m"
-          "prometheus.resources.core.requests.memory" = "750Mi"
-          "prometheus.retention" = "12h"
-        }
-        version = "0.1.5" #TODO Upgrade to 0.2.X
-      }
+      enable_cluster_monitoring = false
       depends_on = [
         rancher2_cluster_template.utility_template]
     }
@@ -191,6 +168,71 @@ resource "null_resource" "nginx_service" {
   }
 }
 
+resource "null_resource" "monitoring_ns" {
+  depends_on = [null_resource.delay]
+
+  provisioner "local-exec" {
+    command = "kubectl create ns cattle-monitoring-system"
+  }
+}
+
+
+resource "helm_release" "rancher-monitoring-crd" {
+  provider = helm.utility
+  name = "rancher-monitoring-crd"
+  namespace = "cattle-monitoring-system"
+  repository = "https://charts.rancher.io"
+  version = "14.5.100"
+  chart = "rancher-monitoring-crd"
+  depends_on = [null_resource.delay]
+}
+
+
+resource "helm_release" "rancher-monitoring" {
+  provider = helm.utility
+  name = "rancher-monitoring"
+  namespace = "cattle-monitoring-system"
+  repository = "https://charts.rancher.io"
+  version = "14.5.100"
+  chart = "rancher-monitoring"
+  depends_on = [helm_release.rancher-monitoring-crd]
+}
+
+
+
+//# Cluster monitoring
+//resource "rancher2_app_v2" "monitor_co" {
+//  provider = rancher2.admin
+//  lifecycle {
+//    ignore_changes = all
+//  }
+//  cluster_id = rancher2_cluster.utility_cluster.id
+//  name = "rancher-monitoring"
+//  namespace = "cattle-monitoring-system"
+//  repo_name = "rancher-charts"
+//  chart_name = "rancher-monitoring"
+//  chart_version = "14.5.100"
+//  values = templatefile("modules/cluster_utility/templates/values.yaml", {})
+//
+//  depends_on = [local_file.kube_cluster_yaml,rancher2_cluster.utility_cluster, null_resource.delay]
+//}
+
+//# Cluster monitoring
+//resource "rancher2_app_v2" "monitor_crd" {
+//  provider = rancher2.admin
+//  lifecycle {
+//    ignore_changes = all
+//  }
+//  cluster_id = rancher2_cluster.utility_cluster.id
+//  name = "rancher-monitoring-crd"
+//  namespace = "cattle-monitoring-system"
+//  repo_name = "rancher-charts"
+//  chart_name = "rancher-monitoring"
+//  chart_version = "14.5.100"
+//
+//  depends_on = [local_file.kube_cluster_yaml,rancher2_cluster.utility_cluster, null_resource.delay]
+//}
+
 
 #install Longhorn
 resource "rancher2_app_v2" "longhorn" {
@@ -214,7 +256,7 @@ resource "rancher2_cluster_logging" "ecklogging" {
   elasticsearch_config {
     endpoint = "http://elasticsearch.172.16.128.244.nip.io"
     auth_username = "elastic"
-    auth_password = var.elastic_password #this wont work yet
+    auth_password = var.elastic_password
     index_prefix = "utility"
     ssl_verify = false
   }
