@@ -2,7 +2,7 @@ terraform {
   required_providers {
     rancher2 = {
       source = "rancher/rancher2"
-      version = "1.20.1"
+      version = "1.22.2"
       configuration_aliases = [ rancher2.admin ]
     }
   }

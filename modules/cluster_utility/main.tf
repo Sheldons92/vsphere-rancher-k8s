@@ -2,7 +2,7 @@ terraform {
   required_providers {
     rancher2 = {
       source = "rancher/rancher2"
-      version = "1.20.1"
+      version = "1.22.2"
       configuration_aliases = [ rancher2.admin ]
     }
     helm = {
@@ -60,7 +60,7 @@ resource "rancher2_cluster_template" "utility_template" {
         enabled = false
       }
       rke_config {
-        kubernetes_version = "v1.20.11-rancher1-1"
+        kubernetes_version = "v1.21.8-rancher1-1"
         ignore_docker_version = false
         network {
           plugin = "canal"
@@ -108,7 +108,7 @@ resource "rancher2_node_pool" "nodepool_master" {
   provider = rancher2.admin
   cluster_id = rancher2_cluster.utility_cluster.id
   name = "masters"
-  hostname_prefix = "dsheldon-utility-master-" #TODO Variablise
+  hostname_prefix = "utility-master-" #TODO Variablise
   node_template_id = rancher2_node_template.utility_ms_template.id
   quantity = "1" #TODO Variablise
   control_plane = true
@@ -123,7 +123,7 @@ resource "rancher2_node_pool" "nodepool_worker" {
   provider = rancher2.admin
   cluster_id = rancher2_cluster.utility_cluster.id
   name = "workers"
-  hostname_prefix = "dsheldon-utility-worker-" #TODO Variablise
+  hostname_prefix = "utility-worker-" #TODO Variablise
   node_template_id = rancher2_node_template.utility_worker_template.id
   quantity = "3" #TODO Variablise
   control_plane = false
@@ -172,7 +172,7 @@ resource "null_resource" "monitoring_ns" {
   depends_on = [null_resource.delay]
 
   provisioner "local-exec" {
-    command = "kubectl create ns cattle-monitoring-system"
+    command = "kubectl create ns cattle-monitoring-system --kubeconfig=utility_kube_config_cluster.yml"
   }
 }
 
@@ -182,7 +182,7 @@ resource "helm_release" "rancher-monitoring-crd" {
   name = "rancher-monitoring-crd"
   namespace = "cattle-monitoring-system"
   repository = "https://charts.rancher.io"
-  version = "14.5.100"
+  version = "100.1.0+up19.0.3"
   chart = "rancher-monitoring-crd"
   depends_on = [null_resource.delay]
 }
@@ -193,7 +193,7 @@ resource "helm_release" "rancher-monitoring" {
   name = "rancher-monitoring"
   namespace = "cattle-monitoring-system"
   repository = "https://charts.rancher.io"
-  version = "14.5.100"
+  version = "100.1.0+up19.0.3"
   chart = "rancher-monitoring"
   depends_on = [helm_release.rancher-monitoring-crd]
 }
@@ -243,7 +243,7 @@ resource "rancher2_app_v2" "longhorn" {
   namespace = "longhorn-system"
   repo_name = "rancher-charts"
   chart_name = "longhorn"
-  chart_version = "1.0.201"
+  chart_version = "100.1.1+up1.2.3"
 }
 
 # Create a new Rancher2 Cluster Logging
