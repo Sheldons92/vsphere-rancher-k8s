@@ -2,7 +2,7 @@ terraform {
   required_providers {
     rke = {
       source  = "rancher/rke"
-      version = "1.2.3"
+      version = "1.3.0"
     }
   }
   required_version = ">= 0.13"
@@ -10,7 +10,8 @@ terraform {
 
 resource rke_cluster "cluster" {
   ssh_agent_auth     = true
-cluster_name = "cluster"
+  cluster_name = "cluster"
+  # kubernetes_version = "<K8s_VERSION>"
   dynamic "nodes" {
 
     for_each = var.vm_address

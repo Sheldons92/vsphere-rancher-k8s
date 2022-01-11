@@ -177,3 +177,8 @@ variable elastic_password {
   type        = string
   description = "Location of template for downstream RKE Clusters in format /DC/Folder/Name"
 }
+
+variable rancher_password {
+  type        = string
+  description = "Name of the vCenter Cluster object"
+}

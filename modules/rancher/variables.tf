@@ -38,11 +38,7 @@ variable vsphere_cluster {
   description = "Name of the vCenter Cluster object"
 }
 
-//variable api_url {
-//  type        = string
-//  description = "api url of rancher"
-//}
-
-//variable token_key {
-//  type = string
-//}
+variable rancher_password {
+  type        = string
+  description = "Name of the vCenter Cluster object"
+}

@@ -61,7 +61,7 @@ resource "vsphere_virtual_machine" "rke-nodes" {
 
   extra_config = {
     "guestinfo.metadata" = base64encode(templatefile("${path.module}/templates/metadata.yml.tpl", {
-      node_ip       = "${var.vm_network}${count.index + 111}/${var.vm_netmask}",
+      node_ip       = "${var.vm_network}${count.index + 115}/${var.vm_netmask}",
       node_gateway  = var.vm_gateway,
       node_dns      = var.vm_dns,
       node_hostname = "${var.vm_prefix}${count.index + 1}"
@@ -128,6 +128,14 @@ resource "vsphere_virtual_machine" "rke-lb" {
       "sudo cp /root/nginx.conf /etc/nginx/nginx.conf ", #Changed to CP for testing that this is working.
       "sudo service nginx restart"
     ]
+
+    #Below is for use with SLES
+    # provisioner "remote-exec" {
+    # inline = [
+    #   "sudo zypper up && sudo zypper addrepo -G -t yum -c 'http://nginx.org/packages/sles/15' nginx && wget http://nginx.org/keys/nginx_signing.key && sudo rpm --import nginx_signing.key && sudo zypper --non-interactive in nginx",
+    #   "sudo cp /root/nginx.conf /etc/nginx/nginx.conf ", #Changed to CP for testing that this is working.
+    #   "sudo systemctl restart nginx"
+    # ]
 
     connection {
       agent = "true"

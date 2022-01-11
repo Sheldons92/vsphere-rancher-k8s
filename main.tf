@@ -3,7 +3,7 @@ terraform {
   required_providers {
     rancher2 = {
       source = "rancher/rancher2"
-      version = "1.20.1"
+      version = "1.22.2"
        }
     }
   }
@@ -70,6 +70,7 @@ module "rancher" {
   vsphere_user = var.vsphere_user
   vsphere_password = var.vsphere_password
   vsphere_datacenter = var.vsphere_datacenter
+  rancher_password = var.rancher_password
 
   depends_on = [module.rke]
 }
@@ -111,40 +112,15 @@ module "utility" {
   elastic_password = var.elastic_password
 }
 
-
-
-//module "prod" {
-//  source = "./modules/cluster_prod"
-//  providers = {
-//    rancher2.admin = rancher2.admin
-//  }
-//  rancher_hostname = var.rancher_hostname
-//  token_key = module.rancher.token_key
-//  cloud_credential = module.rancher.cloud_credential
-//  vsphere_user = var.vsphere_user
-//  vsphere_password = var.vsphere_password
-//  vsphere_datacenter = var.vsphere_datacenter
-//  vsphere_cluster = var.vsphere_cluster
-//  vsphere_network = var.vsphere_network
-//  vm_count = "1"
-//  #TODO Figure out why I need this?
-//  vm_prefix = "null"
-//  #TODO Figure out why I need this?
-//  vsphere_server = var.vsphere_server
-//  vm_datastore = var.vm_datastore
-//  vsphere_pool = var.resource_pool
-//  template_location = var.template_location
-//}
-
-module "eck" {
-  source = "./modules/eck"
-  elastic_password = var.elastic_password
-  providers = {
-    helm.utility = helm.utility
-  }
-    rancher_hostname = var.rancher_hostname
-    depends_on = [ module.utility ]
-}
+# module "eck" {
+#   source = "./modules/ECK"
+#   elastic_password = var.elastic_password
+#   providers = {
+#     helm.utility = helm.utility
+#   }
+#     rancher_hostname = var.rancher_hostname
+#     depends_on = [ module.utility ]
+# }
 
 resource "null_resource" "wait_for_rancher" {
   provisioner "local-exec" {
