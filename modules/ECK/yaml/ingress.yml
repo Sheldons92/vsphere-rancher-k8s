@@ -22,4 +22,4 @@ spec:
             backend:
               serviceName: elasticsearch-es-http
               servicePort: 9200
-      host: elasticsearch.172.16.128.244.nip.io
+      host: elasticsearch.172.16.128.243.nip.io

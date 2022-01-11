@@ -32,7 +32,7 @@ provider = rancher2.admin
 
 resource "rancher2_node_template" "utility_worker_template" {
   provider = rancher2.admin
-  name                = "utility-master-template"
+  name                = "utility-worker-template"
   description         = "Node template for utility K8s cluster master & cp nodes"
   cloud_credential_id = var.cloud_credential
   vsphere_config {
@@ -177,66 +177,22 @@ resource "null_resource" "monitoring_ns" {
 }
 
 
-resource "helm_release" "rancher-monitoring-crd" {
-  provider = helm.utility
-  name = "rancher-monitoring-crd"
-  namespace = "cattle-monitoring-system"
-  repository = "https://charts.rancher.io"
-  version = "100.1.0+up19.0.3"
-  chart = "rancher-monitoring-crd"
-  depends_on = [null_resource.delay]
-}
-
-
-resource "helm_release" "rancher-monitoring" {
-  provider = helm.utility
+resource "rancher2_app_v2" "rancher-monitoring" {
+  depends_on = [null_resource.delay, local_file.kube_cluster_yaml]
+  provider = rancher2.admin
+  cluster_id = rancher2_cluster.utility_cluster.id
   name = "rancher-monitoring"
   namespace = "cattle-monitoring-system"
-  repository = "https://charts.rancher.io"
-  version = "100.1.0+up19.0.3"
-  chart = "rancher-monitoring"
-  depends_on = [helm_release.rancher-monitoring-crd]
+  repo_name = "rancher-charts"
+  chart_name = "rancher-monitoring"
+  chart_version = "100.1.0+up19.0.3"
 }
 
-
-
-//# Cluster monitoring
-//resource "rancher2_app_v2" "monitor_co" {
-//  provider = rancher2.admin
-//  lifecycle {
-//    ignore_changes = all
-//  }
-//  cluster_id = rancher2_cluster.utility_cluster.id
-//  name = "rancher-monitoring"
-//  namespace = "cattle-monitoring-system"
-//  repo_name = "rancher-charts"
-//  chart_name = "rancher-monitoring"
-//  chart_version = "14.5.100"
-//  values = templatefile("modules/cluster_utility/templates/values.yaml", {})
-//
-//  depends_on = [local_file.kube_cluster_yaml,rancher2_cluster.utility_cluster, null_resource.delay]
-//}
-
-//# Cluster monitoring
-//resource "rancher2_app_v2" "monitor_crd" {
-//  provider = rancher2.admin
-//  lifecycle {
-//    ignore_changes = all
-//  }
-//  cluster_id = rancher2_cluster.utility_cluster.id
-//  name = "rancher-monitoring-crd"
-//  namespace = "cattle-monitoring-system"
-//  repo_name = "rancher-charts"
-//  chart_name = "rancher-monitoring"
-//  chart_version = "14.5.100"
-//
-//  depends_on = [local_file.kube_cluster_yaml,rancher2_cluster.utility_cluster, null_resource.delay]
-//}
 
 
 #install Longhorn
 resource "rancher2_app_v2" "longhorn" {
-  depends_on = [null_resource.delay]
+  depends_on = [null_resource.delay, local_file.kube_cluster_yaml]
   provider = rancher2.admin
   cluster_id = rancher2_cluster.utility_cluster.id
   name = "longhorn"
@@ -246,21 +202,21 @@ resource "rancher2_app_v2" "longhorn" {
   chart_version = "100.1.1+up1.2.3"
 }
 
-# Create a new Rancher2 Cluster Logging
-resource "rancher2_cluster_logging" "ecklogging" {
-  depends_on = [null_resource.delay]
-  provider = rancher2.admin
-  name = "ecklogging"
-  cluster_id = rancher2_cluster.utility_cluster.id
-  kind = "elasticsearch"
-  elasticsearch_config {
-    endpoint = "http://elasticsearch.172.16.128.244.nip.io"
-    auth_username = "elastic"
-    auth_password = var.elastic_password
-    index_prefix = "utility"
-    ssl_verify = false
-  }
-}
+# # Create a new Rancher2 Cluster Logging
+# resource "rancher2_cluster_logging" "ecklogging" {
+#   depends_on = [null_resource.delay, null_resource.kube_config_cluster]
+#   provider = rancher2.admin
+#   name = "ecklogging"
+#   cluster_id = rancher2_cluster.utility_cluster.id
+#   kind = "elasticsearch"
+#   elasticsearch_config {
+#     endpoint = "http://elasticsearch.172.16.128.244.nip.io"
+#     auth_username = "elastic"
+#     auth_password = var.elastic_password
+#     index_prefix = "utility"
+#     ssl_verify = false
+#   }
+# }
 
 output "utility_worker_ips" {
   value = "${rancher2_cluster_sync.utility_cluster.nodes[*].ip_address}"

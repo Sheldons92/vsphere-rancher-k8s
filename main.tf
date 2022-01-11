@@ -137,15 +137,15 @@ module "utility" {
 //  template_location = var.template_location
 //}
 
-module "eck" {
-  source = "./modules/ECK"
-  elastic_password = var.elastic_password
-  providers = {
-    helm.utility = helm.utility
-  }
-    rancher_hostname = var.rancher_hostname
-    depends_on = [ module.utility ]
-}
+# module "eck" {
+#   source = "./modules/ECK"
+#   elastic_password = var.elastic_password
+#   providers = {
+#     helm.utility = helm.utility
+#   }
+#     rancher_hostname = var.rancher_hostname
+#     depends_on = [ module.utility ]
+# }
 
 resource "null_resource" "wait_for_rancher" {
   provisioner "local-exec" {

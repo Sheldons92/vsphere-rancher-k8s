@@ -71,7 +71,7 @@ output   token_key {
 
 # Create a new rancher2 Cloud Credential
 resource "rancher2_cloud_credential" "fremont" {
-  depends_on = [rancher2_bootstrap.admin]
+  depends_on = [rancher2_bootstrap.admin, helm_release.rancher ]
   provider = rancher2.admin
   name = "fremont"
   description = "fremont credentials"

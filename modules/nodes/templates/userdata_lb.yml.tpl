@@ -1,14 +1,14 @@
 #cloud-config
 users:
   - name: ${vm_ssh_user}
-    ssh-authorized-keys:
+    ssh_authorized_keys:
       - ${vm_ssh_key}
     sudo: ALL=(ALL) NOPASSWD:ALL
 write_files:
   - path: /root/nginx.conf
     content: |
         load_module /usr/lib/nginx/modules/ngx_stream_module.so;
-
+        
         worker_processes 4;
         worker_rlimit_nofile 40000;
 
