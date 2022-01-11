@@ -129,6 +129,7 @@ resource "vsphere_virtual_machine" "rke-lb" {
       "sudo service nginx restart"
     ]
 
+    #Below is for use with SLES
     # provisioner "remote-exec" {
     # inline = [
     #   "sudo zypper up && sudo zypper addrepo -G -t yum -c 'http://nginx.org/packages/sles/15' nginx && wget http://nginx.org/keys/nginx_signing.key && sudo rpm --import nginx_signing.key && sudo zypper --non-interactive in nginx",

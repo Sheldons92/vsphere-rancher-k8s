@@ -6,10 +6,10 @@ This repo creates the following:
 * 2x NGINX Loadbalancer (1 For Rancher, 1 for Utility Cluster)
 * 3x RKE Nodes leveraging Embedded HA, forming a K8s Cluster
 * Installation of `Cert-Manager` and `Rancher` 
-* 2x Downstream RKE Clusters with Monitoring Enabled (Prod & Utility)
+* 1x Downstream Rancher Provisioned Cluster with Monitoring Enabled (Utility)
 * Installs Longhorn in to Utility cluster for PVs
-* Installs ECK operator in to the Utility cluster
-* Installs ElasticSearch & Kibana
+* Installs ECK operator in to the Utility cluster - (To FIX)
+* Installs ElasticSearch & Kibana - (To FIX)
 
 # Prerequisites
 
@@ -37,7 +37,7 @@ Apply complete! Resources: 9 added, 0 changed, 0 destroyed.
 
 Outputs:
 
-rancher_url = https://rancher.nip.io
+rancher_url = https://rancher.IP.nip.io
 ```
 This repository is based off David Holders Rancher vSphere Repo (https://github.com/David-VTUK/Rancher-RKE-vSphere)
 
